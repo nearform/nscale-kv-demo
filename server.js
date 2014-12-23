@@ -5,6 +5,14 @@ var redis   = require('redis');
 var concat  = require('concat-stream');
 var client  = redis.createClient(6379, process.env.DOCKER_HOST_IP || 'localhost');
 var server  = http.createServer();
+var errors  = 0;
+
+client.on('error', function(err) {
+  console.log(err);
+  if (++errors === 10) {
+    process.exit(1);
+  }
+});
 
 server.on('request', function(req, res) {
   if (req.method === 'GET') {
